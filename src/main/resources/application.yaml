@@ -20,3 +20,14 @@ spring:
 jwt:
   signerKey: "PzcEXHkagVn34ElrlcOUQLazHeIg86xNVPk5Fj94TzH0RyCLngqSyPmzUtWc7yyP"
   expirationTime: 86400000spring.application.name=watch-store-be
+
+
+
+  flyway:
+    enabled: true
+    url: jdbc:mysql://localhost:3306/WATCH_AURA
+    user: root
+    password: root
+    locations:
+      -classpath:db/migration
+    baseline-on-migrate: true

@@ -3,25 +3,25 @@ version: '3.8'
 services:
   mysql:
     image: mysql:8.0.36-debian
-    container_name: sqltest
+    container_name: watch-mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: WATCH_AURA
     ports:
-      - "3306:3306"
+      - "3307:3306"
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 5s
       timeout: 5s
       retries: 5
     volumes:
-      - ctdt-data:/var/lib/mysql
+      - watch-data:/var/lib/mysql
     networks:
-      - ctdt-network
+      - watch-network
 
   app:
     build: .   # build từ Dockerfile
-    container_name: sqltest-app-watch-store
+    container_name: mysql-watch-store
     depends_on:
       mysql:
         condition: service_healthy
@@ -32,11 +32,11 @@ services:
       - DB_USERNAME=root
       - DB_PASSWORD=root
     networks:
-      - ctdt-network
+      - watch-network
 
 volumes:
-  ctdt-data:
+  watch-data:
 
 networks:
-  ctdt-network:
+  watch-network:
     driver: bridge
