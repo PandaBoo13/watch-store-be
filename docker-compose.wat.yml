@@ -20,10 +20,11 @@ services:
       - ctdt-network
 
   app:
-    build: .   # build from Dockerfile
-    container_name: sqltest
+    build: .   # build từ Dockerfile
+    container_name: sqltest-app-watch-store
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
