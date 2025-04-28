@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0.36-debian
+    container_name: sqltest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: WATCH_AURA
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ctdt-data:/var/lib/mysql
+    networks:
+      - ctdt-network
+
+  app:
+    build: .   # build from Dockerfile
+    container_name: sqltest
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL=jdbc:mysql://mysql:3306/WATCH_AURA
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+    networks:
+      - ctdt-network
+
+volumes:
+  ctdt-data:
+
+networks:
+  ctdt-network:
+    driver: bridge
