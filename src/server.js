@@ -2,9 +2,14 @@ require('dotenv').config();
 console.log('PORT from env:', process.env.PORT);  // thêm dòng này để debug
 const express = require('express');
 const app = express();
+const cors= require('./utils/config/cors.config')
+
 
 const PORT = process.env.PORT;
 const host = process.env.HOST_NAME;
+
+app.use(cors);
+
 
 const userRoutes = require("./web/routes/user.route");
 
