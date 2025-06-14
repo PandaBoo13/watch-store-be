@@ -11,14 +11,16 @@ const host = process.env.HOST_NAME;
 app.use(cors);
 
 
-const userRoutes = require("./web/routes/user.route");
-
+const userRoutes = require("./web/routes/nguoiDung.route");
+const watchRoutes= require("./web/routes/watch.route");
 
 // Middleware
 app.use(express.json());
 
 // Routes
 app.use("/api/users", userRoutes); // => /api/users/register
+app.use("/api/watchs", watchRoutes);
+
 
 // Error handler (tuỳ chọn)
 app.use((err, req, res, next) => {
