@@ -1,6 +1,5 @@
 const pool = require('../db/mysql').promise();
 
-// Entity constructor
 class SanPham {
   constructor(data) {
     Object.assign(this, data);
@@ -17,7 +16,8 @@ const SanPhamRepository = {
     hinhanhchinh,
     mauudai,
     soluong,
-    bestseller
+    bestseller,
+    trangthai = 'dangban' // mặc định nếu không truyền
   }) {
     const masanpham = await this.generateUniqueSanPhamId();
     const ngaytao = new Date();
@@ -25,36 +25,42 @@ const SanPhamRepository = {
     const sql = `
       INSERT INTO sanpham (
         masanpham, tensanpham, mamodel, mota, giaban, hinhanhchinh,
-        ngaytao, mauudai, soluong, bestseller
+        ngaytao, mauudai, soluong, bestseller, trangthai
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     await pool.query(sql, [
       masanpham, tensanpham, mamodel, mota, giaban, hinhanhchinh,
-      ngaytao, mauudai, soluong, bestseller
+      ngaytao, mauudai, soluong, bestseller, trangthai
     ]);
 
     return await this.findById(masanpham);
   },
 
-  // Sinh mã sản phẩm không trùng (6 chữ số)
+  // Sinh mã sản phẩm không trùng
   async generateUniqueSanPhamId() {
     let id;
     let exists = true;
 
     while (exists) {
       id = Math.floor(100000 + Math.random() * 900000);
-      const [rows] = await pool.query('SELECT 1 FROM sanpham WHERE masanpham = ?', [id]);
+      const [rows] = await pool.query(
+        'SELECT 1 FROM sanpham WHERE masanpham = ?',
+        [id]
+      );
       exists = rows.length > 0;
     }
 
     return id.toString();
   },
 
-  // Tìm sản phẩm theo mã
+  // Tìm theo mã
   async findById(masanpham) {
-    const [rows] = await pool.query('SELECT * FROM sanpham WHERE masanpham = ?', [masanpham]);
+    const [rows] = await pool.query(
+      'SELECT * FROM sanpham WHERE masanpham = ?',
+      [masanpham]
+    );
     return rows.length > 0 ? new SanPham(rows[0]) : null;
   },
 
@@ -80,7 +86,10 @@ const SanPhamRepository = {
 
   // Xóa sản phẩm
   async deleteSanPham(masanpham) {
-    const [result] = await pool.query('DELETE FROM sanpham WHERE masanpham = ?', [masanpham]);
+    const [result] = await pool.query(
+      'DELETE FROM sanpham WHERE masanpham = ?',
+      [masanpham]
+    );
     return result.affectedRows > 0;
   }
 };

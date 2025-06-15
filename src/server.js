@@ -14,7 +14,7 @@ app.use(cors);
 const userRoutes = require("./web/routes/nguoiDung.route");
 const watchRoutes= require("./web/routes/dongho.route");
 const sanphamRoutes= require('./web/routes/sanpham.route');
-
+const danhmucRoutes= require('./web/routes/danhmucdongho.route');
 // Middleware
 app.use(express.json());
 
@@ -22,7 +22,7 @@ app.use(express.json());
 app.use("/api/users", userRoutes); // => /api/users/register
 app.use("/api/watchs", watchRoutes);
 app.use("/api/sanphams", sanphamRoutes);
-
+app.use("/api/danhmucs", danhmucRoutes);
 
 // Error handler (tuỳ chọn)
 app.use((err, req, res, next) => {
