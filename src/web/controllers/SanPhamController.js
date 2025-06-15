@@ -87,6 +87,27 @@ class SanPhamController {
       });
     }
   }
+
+
+  async getDetail(req, res) {
+  try {
+    const { id } = req.params;
+    const result = await SanPhamService.getFullDetail(id);
+    res.status(200).json({
+      success: true,
+      message: result.message,
+      data: result.data
+    });
+  } catch (err) {
+    res.status(404).json({
+      success: false,
+      message: err.message || "Không tìm thấy chi tiết sản phẩm"
+    });
+  }
+}
+
+
+  
 }
 
 module.exports = new SanPhamController;
