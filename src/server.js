@@ -12,7 +12,7 @@ app.use(cors);
 
 
 const userRoutes = require("./web/routes/nguoiDung.route");
-const watchRoutes= require("./web/routes/watch.route");
+const watchRoutes= require("./web/routes/dongho.route");
 
 // Middleware
 app.use(express.json());

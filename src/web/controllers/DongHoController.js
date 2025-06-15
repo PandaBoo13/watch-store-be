@@ -1,34 +1,34 @@
-const WatchService = require("../../services/WatchService");
+const DongHoService = require("../../services/DongHoService");
 
-class WatchController {
+class DongHoController {
   async create(req, res) {
     try {
-      const watch = await WatchService.create(req.body);
+      const dongho = await DongHoService.create(req.body);
       res.status(201).json({
         success: true,
-        message: watch.message,
-        data: watch.data,
+        message: dongho.message,
+        data: dongho.data,
       });
     } catch (err) {
       res.status(400).json({
         success: false,
-        message: err.message || "Failed to create watch",
+        message: err.message || "Thêm đồng hồ thất bại",
       });
     }
   }
 
   async getAll(req, res) {
     try {
-      const watches = await WatchService.getAll();
+      const list = await DongHoService.getAll();
       res.status(200).json({
         success: true,
-        message: watches.message,
-        data: watches.data,
+        message: list.message,
+        data: list.data,
       });
     } catch (err) {
       res.status(500).json({
         success: false,
-        message: err.message || "Failed to retrieve watches",
+        message: err.message || "Không thể lấy danh sách đồng hồ",
       });
     }
   }
@@ -36,16 +36,16 @@ class WatchController {
   async getById(req, res) {
     try {
       const { id } = req.params;
-      const watch = await WatchService.getById(id);
+      const dongho = await DongHoService.getById(id);
       res.status(200).json({
         success: true,
-        message: watch.message,
-        data: watch.data,
+        message: dongho.message,
+        data: dongho.data,
       });
     } catch (err) {
       res.status(404).json({
         success: false,
-        message: err.message || "Watch not found",
+        message: err.message || "Không tìm thấy đồng hồ",
       });
     }
   }
@@ -53,7 +53,7 @@ class WatchController {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const updated = await WatchService.update(id, req.body);
+      const updated = await DongHoService.update(id, req.body);
       res.status(200).json({
         success: true,
         message: updated.message,
@@ -62,7 +62,7 @@ class WatchController {
     } catch (err) {
       res.status(400).json({
         success: false,
-        message: err.message || "Failed to update watch",
+        message: err.message || "Cập nhật đồng hồ thất bại",
       });
     }
   }
@@ -70,18 +70,18 @@ class WatchController {
   async delete(req, res) {
     try {
       const { id } = req.params;
-      await WatchService.delete(id);
+      await DongHoService.delete(id);
       res.status(200).json({
         success: true,
-        message: "Watch deleted successfully",
+        message: "Xóa đồng hồ thành công",
       });
     } catch (err) {
       res.status(400).json({
         success: false,
-        message: err.message || "Failed to delete watch",
+        message: err.message || "Xóa đồng hồ thất bại",
       });
     }
   }
 }
 
-module.exports = new WatchController;
+module.exports = new DongHoController;
