@@ -15,15 +15,23 @@ const userRoutes = require("./web/routes/nguoiDung.route");
 const watchRoutes= require("./web/routes/dongho.route");
 const sanphamRoutes= require('./web/routes/sanpham.route');
 const danhmucRoutes= require('./web/routes/danhmucdongho.route');
+const khohangRoutes = require("./web/routes/khohang.route");
+const gioHangRoutes = require("./web/routes/giohang.route");
+const uudaiRoutes= require("./web/routes/uudai.route");
+const diachinguoidungRoutes= require("./web/routes/diachinguoidung.route");
 // Middleware
 app.use(express.json());
+
 
 // Routes
 app.use("/api/users", userRoutes); // => /api/users/register
 app.use("/api/watchs", watchRoutes);
 app.use("/api/sanphams", sanphamRoutes);
 app.use("/api/danhmucs", danhmucRoutes);
-
+app.use("/api/khohang", khohangRoutes);  
+app.use("/api/giohangs", gioHangRoutes);  
+app.use("/api/uudais", uudaiRoutes);  
+app.use("/api/diachinguoidungs", diachinguoidungRoutes);  
 // Error handler (tuỳ chọn)
 app.use((err, req, res, next) => {
   console.error(err.stack);
