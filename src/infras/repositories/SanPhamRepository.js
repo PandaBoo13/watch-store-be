@@ -117,5 +117,23 @@ const SanPhamRepository = {
     );
     return result.affectedRows > 0;
   },
+
+  // Lấy chi tiết sản phẩm + thông tin đồng hồ
+async findDetailByMaSanPham(masanpham) {
+  const [rows] = await pool.query(
+    `
+    SELECT 
+      sp.*, 
+      dh.tenmodel, dh.madanhmuc, dh.chatlieuvo, dh.chatlieuday,
+      dh.mauday, dh.duongkinh, dh.doday, dh.chongnuoc,
+      dh.dongco, dh.mausomatso, dh.gioitinh
+    FROM sanpham sp
+    JOIN dongho dh ON sp.mamodel = dh.madongho
+    WHERE sp.masanpham = ?
+    `,
+    [masanpham]
+  );
+  return rows.length > 0 ? rows[0] : null;
+}
 };
 module.exports = SanPhamRepository;

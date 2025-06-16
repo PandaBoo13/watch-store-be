@@ -55,6 +55,14 @@ const SanPhamService = {
       message: "Xóa sản phẩm thành công",
     };
   },
+  async getFullDetail(masanpham) {
+  const detail = await SanPhamRepository.findDetailByMaSanPham(masanpham);
+  if (!detail) throw new Error("Không tìm thấy sản phẩm chi tiết");
+  return {
+    message: "Lấy chi tiết sản phẩm thành công",
+    data: detail
+  };
+}
 };
 
 module.exports = SanPhamService;
