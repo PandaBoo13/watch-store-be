@@ -6,7 +6,7 @@ const SanPhamService = {
     const sanpham = await SanPhamRepository.createSanPham(data);
     return {
       message: "Sản phẩm đã được tạo thành công",
-      data: sanpham
+      data: sanpham,
     };
   },
 
@@ -15,7 +15,7 @@ const SanPhamService = {
     const list = await SanPhamRepository.findAll();
     return {
       message: "Danh sách sản phẩm đã được lấy",
-      data: list
+      data: list,
     };
   },
 
@@ -25,17 +25,25 @@ const SanPhamService = {
     if (!sanpham) throw new Error("Không tìm thấy sản phẩm");
     return {
       message: "Lấy thông tin sản phẩm thành công",
-      data: sanpham
+      data: sanpham,
+    };
+  },
+  async getByFilter(filters) {
+    const data = await SanPhamRepository.findAllWithFilter(filters);
+    return {
+      message: "Đã lọc sản phẩm thành công",
+      data,
     };
   },
 
   // Cập nhật sản phẩm
   async update(masanpham, data) {
     const updated = await SanPhamRepository.updateSanPham(masanpham, data);
-    if (!updated) throw new Error("Cập nhật thất bại hoặc không tìm thấy sản phẩm");
+    if (!updated)
+      throw new Error("Cập nhật thất bại hoặc không tìm thấy sản phẩm");
     return {
       message: "Cập nhật sản phẩm thành công",
-      data: updated
+      data: updated,
     };
   },
 
@@ -44,9 +52,9 @@ const SanPhamService = {
     const success = await SanPhamRepository.deleteSanPham(masanpham);
     if (!success) throw new Error("Xóa thất bại hoặc không tìm thấy sản phẩm");
     return {
-      message: "Xóa sản phẩm thành công"
+      message: "Xóa sản phẩm thành công",
     };
-  }
+  },
 };
 
 module.exports = SanPhamService;

@@ -34,6 +34,22 @@ class SanPhamController {
       });
     }
   }
+  async getByFilter(req, res) {
+    try {
+      const filters = req.query; // Lấy điều kiện từ URL query
+      const list = await SanPhamService.getByFilter(filters);
+      res.status(200).json({
+        success: true,
+        message: "Lọc sản phẩm thành công",
+        data: list.data,
+      });
+    } catch (err) {
+      res.status(400).json({
+        success: false,
+        message: err.message || "Lọc sản phẩm thất bại",
+      });
+    }
+  }
 
   // Lấy sản phẩm theo mã
   async getById(req, res) {
@@ -89,4 +105,4 @@ class SanPhamController {
   }
 }
 
-module.exports = new SanPhamController;
+module.exports = new SanPhamController();

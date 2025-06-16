@@ -18,4 +18,5 @@ router.get("/getId/:id", SanPhamController.getById);
 // Cập nhật sản phẩm
 router.put("/update/:id", SanPhamController.update);
 
+router.get("/filter", SanPhamController.getByFilter);
 module.exports = router;
