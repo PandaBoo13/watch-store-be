@@ -109,6 +109,7 @@ const SanPhamRepository = {
     await pool.query(sql, [...values, masanpham]);
     return await this.findById(masanpham);
   },
+
   // Xóa sản phẩm
   async deleteSanPham(masanpham) {
     const [result] = await pool.query(
@@ -119,9 +120,9 @@ const SanPhamRepository = {
   },
 
   // Lấy chi tiết sản phẩm + thông tin đồng hồ
-async findDetailByMaSanPham(masanpham) {
-  const [rows] = await pool.query(
-    `
+  async findDetailByMaSanPham(masanpham) {
+    const [rows] = await pool.query(
+      `
     SELECT 
       sp.*, 
       dh.tenmodel, dh.madanhmuc, dh.chatlieuvo, dh.chatlieuday,
@@ -131,9 +132,33 @@ async findDetailByMaSanPham(masanpham) {
     JOIN dongho dh ON sp.mamodel = dh.madongho
     WHERE sp.masanpham = ?
     `,
-    [masanpham]
-  );
-  return rows.length > 0 ? rows[0] : null;
-}
+      [masanpham]
+    );
+    return rows.length > 0 ? rows[0] : null;
+  },
+  async laySanPhamBestseller() {
+    const [rows] = await pool.query(
+      "SELECT * FROM sanpham WHERE bestseller = 1"
+    );
+    return rows;
+  },
+  async layDongHoNam() {
+    const [rows] = await pool.query(`
+      SELECT sp.*
+      FROM sanpham sp
+      JOIN dongho dh ON sp.mamodel = dh.madongho
+      WHERE dh.gioitinh = 'nam'
+    `);
+    return rows.map((row) => new SanPham(row));
+  },
+  async layDongHoNu() {
+    const [rows] = await pool.query(`
+      SELECT sp.*
+      FROM sanpham sp
+      JOIN dongho dh ON sp.mamodel = dh.madongho
+      WHERE dh.gioitinh = 'nu'
+    `);
+    return rows.map((row) => new SanPham(row));
+  },
 };
 module.exports = SanPhamRepository;

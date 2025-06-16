@@ -21,5 +21,10 @@ router.put("/update/:id", SanPhamController.update);
 router.get("/filter", SanPhamController.getByFilter);
 
 router.get("/:id/detail", SanPhamController.getDetail);
+router.get("/bestseller", SanPhamController.layDanhSachBestseller);
+
+router.get("/donghonam", SanPhamController.layDongHoNam);
+
+router.get("/donghonu", SanPhamController.layDongHoNu);
 
 module.exports = router;

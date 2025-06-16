@@ -46,6 +46,13 @@ const SanPhamService = {
       data: updated,
     };
   },
+  async getBestsellerSanPham() {
+    const data = await SanPhamRepository.laySanPhamBestseller();
+    return {
+      message: "Lấy sản phẩm bán chạy thành công",
+      data,
+    };
+  },
 
   // Xóa sản phẩm
   async delete(masanpham) {
@@ -56,13 +63,23 @@ const SanPhamService = {
     };
   },
   async getFullDetail(masanpham) {
-  const detail = await SanPhamRepository.findDetailByMaSanPham(masanpham);
-  if (!detail) throw new Error("Không tìm thấy sản phẩm chi tiết");
-  return {
-    message: "Lấy chi tiết sản phẩm thành công",
-    data: detail
-  };
-}
+    const detail = await SanPhamRepository.findDetailByMaSanPham(masanpham);
+    if (!detail) throw new Error("Không tìm thấy sản phẩm chi tiết");
+    return {
+      message: "Lấy chi tiết sản phẩm thành công",
+      data: detail,
+    };
+  },
+  // lấyấy đồng hồ nam
+  async getDongHoNam() {
+    const result = await SanPhamRepository.layDongHoNam();
+    return { message: "Lấy đồng hồ nam thành công", data: result };
+  },
+  // Lấy đồng hồ nữ
+  async getDongHoNu() {
+    const result = await SanPhamRepository.layDongHoNu();
+    return { message: "Lấy đồng hồ nữ thành công", data: result };
+  },
 };
 
 module.exports = SanPhamService;
