@@ -50,6 +50,64 @@ class SanPhamController {
       });
     }
   }
+  // Lấy danh sách sản phẩm bán chạy
+  async layDanhSachBestseller(req, res) {
+    try {
+      const data = await SanPhamService.getBestsellerSanPham();
+      res.status(200).json({
+        success: true,
+        message: "Lấy sản phẩm bán chạy thành công",
+        data: data.data,
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: err.message || "Lỗi server",
+      });
+    }
+  }
+  async layDongHoNam(req, res) {
+    try {
+      console.log("Đã vào hàm getDongHoNam");
+
+      const result = await SanPhamService.getDongHoNam();
+
+      console.log("Dữ liệu truy vấn được:", result.data);
+
+      res.status(200).json({
+        success: true,
+        message: result.message,
+        data: result.data,
+      });
+    } catch (error) {
+      console.error("Lỗi khi lấy đồng hồ nam:", error);
+      res.status(500).json({
+        success: false,
+        message: error.message || "Lỗi truy vấn sản phẩm nam",
+      });
+    }
+  }
+  async layDongHoNu(req, res) {
+    try {
+      console.log("Đã vào hàm getDongHoNu");
+
+      const result = await SanPhamService.getDongHoNu();
+
+      console.log("Dữ liệu truy vấn được:", result.data);
+
+      res.status(200).json({
+        success: true,
+        message: result.message,
+        data: result.data,
+      });
+    } catch (error) {
+      console.error("Lỗi khi lấy đồng hồ nữ:", error);
+      res.status(500).json({
+        success: false,
+        message: error.message || "Lỗi truy vấn sản phẩm nữ",
+      });
+    }
+  }
 
   // Lấy sản phẩm theo mã
   async getById(req, res) {
