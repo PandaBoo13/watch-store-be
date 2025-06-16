@@ -126,4 +126,4 @@ class SanPhamController {
   
 }
 
-module.exports = new SanPhamController();
+module.exports = new SanPhamController;
