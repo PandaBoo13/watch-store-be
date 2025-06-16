@@ -109,15 +109,6 @@ const SanPhamRepository = {
     await pool.query(sql, [...values, masanpham]);
     return await this.findById(masanpham);
   },
-
-  // Xóa sản phẩm
-  async deleteSanPham(masanpham) {
-    const [result] = await pool.query(
-      "DELETE FROM sanpham WHERE masanpham = ?",
-      [masanpham]
-    );
-    return result.affectedRows > 0;
-  },
 };
 
 module.exports = SanPhamRepository;
