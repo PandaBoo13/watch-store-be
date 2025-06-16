@@ -1,4 +1,4 @@
-const pool = require('../db/mysql').promise();
+const pool = require("../db/mysql").promise();
 
 class SanPham {
   constructor(data) {
@@ -17,7 +17,7 @@ const SanPhamRepository = {
     mauudai,
     soluong,
     bestseller,
-    trangthai = 'dangban' // mặc định nếu không truyền
+    trangthai = "dangban", // mặc định nếu không truyền
   }) {
     const masanpham = await this.generateUniqueSanPhamId();
     const ngaytao = new Date();
@@ -31,11 +31,37 @@ const SanPhamRepository = {
     `;
 
     await pool.query(sql, [
-      masanpham, tensanpham, mamodel, mota, giaban, hinhanhchinh,
-      ngaytao, mauudai, soluong, bestseller, trangthai
+      masanpham,
+      tensanpham,
+      mamodel,
+      mota,
+      giaban,
+      hinhanhchinh,
+      ngaytao,
+      mauudai,
+      soluong,
+      bestseller,
+      trangthai,
     ]);
 
     return await this.findById(masanpham);
+  },
+  async findAllWithFilter(filter = {}) {
+    let sql = "SELECT * FROM sanpham";
+    const conditions = [];
+    const values = [];
+
+    for (const [key, value] of Object.entries(filter)) {
+      conditions.push(`${key} = ?`);
+      values.push(value);
+    }
+
+    if (conditions.length > 0) {
+      sql += " WHERE " + conditions.join(" AND ");
+    }
+
+    const [rows] = await pool.query(sql, values);
+    return rows.map((row) => new SanPham(row));
   },
 
   // Sinh mã sản phẩm không trùng
@@ -46,7 +72,7 @@ const SanPhamRepository = {
     while (exists) {
       id = Math.floor(100000 + Math.random() * 900000);
       const [rows] = await pool.query(
-        'SELECT 1 FROM sanpham WHERE masanpham = ?',
+        "SELECT 1 FROM sanpham WHERE masanpham = ?",
         [id]
       );
       exists = rows.length > 0;
@@ -58,7 +84,7 @@ const SanPhamRepository = {
   // Tìm theo mã
   async findById(masanpham) {
     const [rows] = await pool.query(
-      'SELECT * FROM sanpham WHERE masanpham = ?',
+      "SELECT * FROM sanpham WHERE masanpham = ?",
       [masanpham]
     );
     return rows.length > 0 ? new SanPham(rows[0]) : null;
@@ -66,8 +92,8 @@ const SanPhamRepository = {
 
   // Lấy tất cả sản phẩm
   async findAll() {
-    const [rows] = await pool.query('SELECT * FROM sanpham');
-    return rows.map(row => new SanPham(row));
+    const [rows] = await pool.query("SELECT * FROM sanpham");
+    return rows.map((row) => new SanPham(row));
   },
 
   // Cập nhật sản phẩm
@@ -77,17 +103,16 @@ const SanPhamRepository = {
 
     if (fields.length === 0) return false;
 
-    const setClause = fields.map(field => `${field} = ?`).join(', ');
+    const setClause = fields.map((field) => `${field} = ?`).join(", ");
     const sql = `UPDATE sanpham SET ${setClause} WHERE masanpham = ?`;
 
     await pool.query(sql, [...values, masanpham]);
     return await this.findById(masanpham);
   },
-
   // Xóa sản phẩm
   async deleteSanPham(masanpham) {
     const [result] = await pool.query(
-      'DELETE FROM sanpham WHERE masanpham = ?',
+      "DELETE FROM sanpham WHERE masanpham = ?",
       [masanpham]
     );
     return result.affectedRows > 0;
@@ -110,7 +135,5 @@ async findDetailByMaSanPham(masanpham) {
   );
   return rows.length > 0 ? rows[0] : null;
 }
-
 };
-
 module.exports = SanPhamRepository;
