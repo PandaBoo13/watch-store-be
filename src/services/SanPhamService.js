@@ -80,6 +80,19 @@ const SanPhamService = {
     const result = await SanPhamRepository.layDongHoNu();
     return { message: "Lấy đồng hồ nữ thành công", data: result };
   },
+
+  // Lấy giá của sản phẩm theo mã
+  async getPriceById(masanpham) {
+    const giaban = await SanPhamRepository.layGiaSanPham(masanpham);
+    if (giaban === null) throw new Error("Không tìm thấy sản phẩm");
+    return {
+      message: "Lấy giá sản phẩm thành công",
+      giaban,
+    };
+  },
+
+
+
 };
 
 module.exports = SanPhamService;
