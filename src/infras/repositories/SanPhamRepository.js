@@ -161,13 +161,21 @@ const SanPhamRepository = {
     return rows.map((row) => new SanPham(row));
   },
 
-  async layGiaSanPham(masanpham) {
-    const [rows] = await pool.query(
-      "SELECT giaban FROM sanpham WHERE masanpham = ?",
-      [masanpham]
-    );
-    return rows.length > 0 ? rows[0].giaban : null;
-  },
+async layGiaSanPham(masanpham) {
+  const [rows] = await pool.query(
+    "SELECT giaban, tensanpham FROM sanpham WHERE masanpham = ?",
+    [masanpham]
+  );
+  if (rows.length > 0) {
+    return {
+      giaban: rows[0].giaban,
+      tensanpham: rows[0].tensanpham,
+    };
+  } else {
+    return null;
+  }
+}
+
 
 };
 module.exports = SanPhamRepository;

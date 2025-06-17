@@ -82,15 +82,16 @@ const SanPhamService = {
   },
 
   // Lấy giá của sản phẩm theo mã
-  async getPriceById(masanpham) {
-    const giaban = await SanPhamRepository.layGiaSanPham(masanpham);
-    if (giaban === null) throw new Error("Không tìm thấy sản phẩm");
-    return {
-      message: "Lấy giá sản phẩm thành công",
-      giaban,
-    };
-  },
+async getPriceById(masanpham) {
+  const result = await SanPhamRepository.layGiaSanPham(masanpham);
+  if (!result) throw new Error("Không tìm thấy sản phẩm");
 
+  return {
+    message: "Lấy giá sản phẩm thành công",
+    giaban: result.giaban,
+    tensanpham: result.tensanpham,
+  };
+}
 
 
 };
