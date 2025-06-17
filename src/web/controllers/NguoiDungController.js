@@ -37,11 +37,12 @@ class NguoiDungController {
         });
       }
 
-      const ketqua = await NguoiDungService.dangNhap({ email, matkhau });
+   const ketqua = await NguoiDungService.dangNhap({ email, matkhau });
       res.status(200).json({
         thanhcong: true,
         thongbao: ketqua.thongbao,
         duLieu: ketqua.nguoidung,
+        token: ketqua.token // 👉 gửi token về cho client
       });
     } catch (err) {
       res.status(401).json({

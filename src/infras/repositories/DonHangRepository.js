@@ -75,6 +75,13 @@ const DonHangRepository = {
     return rows.map((row) => new DonHang(row));
   },
 
+
+  async findAll() {
+  const [rows] = await pool.query("SELECT * FROM donhang");
+  return rows.map((row) => new DonHang(row));
+},
+
+
   // Lấy đơn hàng theo mã
   async findById(madonhang) {
     const [rows] = await pool.query(
@@ -99,6 +106,9 @@ const DonHangRepository = {
     );
     return result.affectedRows > 0;
   },
+
+
+
 };
 
 module.exports = DonHangRepository;
