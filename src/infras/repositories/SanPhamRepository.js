@@ -160,5 +160,14 @@ const SanPhamRepository = {
     `);
     return rows.map((row) => new SanPham(row));
   },
+
+  async layGiaSanPham(masanpham) {
+    const [rows] = await pool.query(
+      "SELECT giaban FROM sanpham WHERE masanpham = ?",
+      [masanpham]
+    );
+    return rows.length > 0 ? rows[0].giaban : null;
+  },
+
 };
 module.exports = SanPhamRepository;
