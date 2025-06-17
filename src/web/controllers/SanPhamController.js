@@ -182,21 +182,23 @@ class SanPhamController {
 
   // Lấy giá bán của sản phẩm theo mã
   async layGiaSanPham(req, res) {
-    try {
-      const { id } = req.params;
-      const result = await SanPhamService.getPriceById(id);
-      res.status(200).json({
-        success: true,
-        message: result.message,
-        giaban: result.giaban,
-      });
-    } catch (err) {
-      res.status(404).json({
-        success: false,
-        message: err.message || "Không tìm thấy giá sản phẩm",
-      });
-    }
+  try {
+    const { id } = req.params;
+    const result = await SanPhamService.getPriceById(id);
+    res.status(200).json({
+      success: true,
+      message: result.message,
+      giaban: result.giaban,
+      tensanpham: result.tensanpham, // ✅ Thêm dòng này
+    });
+  } catch (err) {
+    res.status(404).json({
+      success: false,
+      message: err.message || "Không tìm thấy giá sản phẩm",
+    });
   }
+}
+
 
   
 }
