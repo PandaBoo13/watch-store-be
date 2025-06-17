@@ -36,6 +36,24 @@ class DonHangController {
     }
   }
 
+// Lấy tất cả đơn hàng (không lọc)
+  async getAllNoFilter(req, res) {
+    try {
+      const result = await DonHangService.getAll(); // không truyền filter
+      res.status(200).json({
+        success: true,
+        message: result.message,
+        data: result.data,
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: err.message || "Không thể lấy tất cả đơn hàng",
+      });
+    }
+  }
+
+
   // Lấy chi tiết đơn hàng theo mã
   async getById(req, res) {
     try {

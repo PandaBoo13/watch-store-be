@@ -18,4 +18,8 @@ router.get("/getId/:id", DonHangController.getById);
 // Cập nhật trạng thái đơn hàng
 router.put("/updateStatus/:id", DonHangController.updateTrangThai);
 
+// Lấy tất cả đơn hàng không lọc
+router.get("/nofilter", DonHangController.getAllNoFilter);
+
+
 module.exports = router;

@@ -1,6 +1,6 @@
 const NguoiDungRepository = require("../infras/repositories/NguoiDungRepository");
 const bcrypt = require("bcrypt");
-
+const authService= require('../utils/jwt')
 const NguoiDungService = {
   // Đăng ký tài khoản mới
   async dangKy({ email, matkhau, hoten, sodienthoai }) {
@@ -26,13 +26,19 @@ const NguoiDungService = {
     if (!dung) throw new Error("Sai mật khẩu");
 
     return {
-      thongbao: "Đăng nhập thành công",
-      nguoidung: {
-        mataikhoan: nguoidung.mataikhoan,
-        hoten: nguoidung.hoten,
-        vaitro: nguoidung.vaitro,
-      },
-    };
+  thongbao: "Đăng nhập thành công",
+  nguoidung: {
+    mataikhoan: nguoidung.mataikhoan,
+    hoten: nguoidung.hoten,
+    vaitro: nguoidung.vaitro,
+  },
+  token: authService.taoToken({
+    id: nguoidung.mataikhoan,
+    vaitro: nguoidung.vaitro,
+    hoten: nguoidung.hoten
+  })
+};
+
   },
 
   // Lấy thông tin người dùng theo ID

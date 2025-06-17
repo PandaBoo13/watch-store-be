@@ -19,6 +19,16 @@ const DonHangService = {
     };
   },
 
+  // Lấy tất cả đơn hàng (không lọc)
+async getAllNoFilter() {
+  const list = await DonHangRepository.findAll();
+  return {
+    message: "Lấy tất cả đơn hàng thành công",
+    data: list,
+  };
+}
+,
+
   // Lấy đơn hàng theo mã
   async getById(madonhang) {
     const donhang = await DonHangRepository.findById(madonhang);
