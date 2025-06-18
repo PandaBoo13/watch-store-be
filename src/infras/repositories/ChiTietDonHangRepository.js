@@ -1,4 +1,5 @@
 const pool = require("../db/mysql").promise();
+const { v4: uuidv4 } = require('uuid');
 
 class ChiTietDonHang {
   constructor(data) {
@@ -10,8 +11,8 @@ const ChiTietDonHangRepository = {
 
   
   // Tạo chi tiết đơn hàng mới
-  async createChiTiet({ madonhang, masanpham, soluong, giaban }) {
-  const machitietdonhang = await this.generateUniqueId(madonhang); // truyền mã đơn hàng vào
+async createChiTiet({ madonhang, masanpham, soluong, giaban }) {
+  const machitietdonhang = `CT_${uuidv4()}`; // dùng uuid thay vì sinh tăng dần
 
   const sql = `
     INSERT INTO chitietdonhang (

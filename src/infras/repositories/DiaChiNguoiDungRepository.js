@@ -7,6 +7,14 @@ class DiaChiNguoiDung {
 }
 
 const DiaChiNguoiDungRepository = {
+
+  async findDefaultByTaiKhoan(mataikhoan) {
+  const [rows] = await pool.query(
+    "SELECT * FROM diachinguoidung WHERE mataikhoan = ? AND la_mac_dinh = true LIMIT 1",
+    [mataikhoan]
+  );
+  return rows.length > 0 ? new DiaChiNguoiDung(rows[0]) : null;
+},
   // Tạo địa chỉ người dùng mới
   async createDiaChi({
     mataikhoan,
@@ -106,7 +114,41 @@ async generateUniqueId(mataikhoan) {
       [madiachi]
     );
     return result.affectedRows > 0;
-  }
+  },
+
+
+    async createDiaChiMacDinh({
+    mataikhoan,
+    tennguoinhan,
+    sodienthoai,
+    diachi
+  }) {
+    // Cập nhật tất cả địa chỉ trước đó thành không mặc định
+    await pool.query(
+      "UPDATE diachinguoidung SET la_mac_dinh = false WHERE mataikhoan = ?",
+      [mataikhoan]
+    );
+
+    // Tạo mã địa chỉ mới
+    const madiachi = await this.generateUniqueId(mataikhoan);
+
+    // Chèn địa chỉ mới với la_mac_dinh = true
+    const sql = `
+      INSERT INTO diachinguoidung (
+        madiachi, mataikhoan, tennguoinhan, sodienthoai, diachi, la_mac_dinh
+      ) VALUES (?, ?, ?, ?, ?, true)
+    `;
+
+    await pool.query(sql, [
+      madiachi,
+      mataikhoan,
+      tennguoinhan,
+      sodienthoai,
+      diachi
+    ]);
+
+    return await this.findById(madiachi);
+  },
 };
 
 module.exports = DiaChiNguoiDungRepository;
