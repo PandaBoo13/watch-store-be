@@ -18,21 +18,27 @@ const UuDaiRepository = {
   },
 
   // Sinh mã ưu đãi không trùng
-  async generateUniqueMaUuDai() {
-    let id;
-    let exists = true;
+async generateUniqueMaUuDai() {
+  const [rows] = await pool.query(`
+    SELECT mauudai
+    FROM uudai
+    WHERE mauudai LIKE 'UD%'
+    ORDER BY CAST(SUBSTRING(mauudai, 3) AS UNSIGNED) DESC
+    LIMIT 1
+  `);
 
-    while (exists) {
-      id = 'UD' + Math.floor(1000 + Math.random() * 9000); // VD: UD4729
-      const [rows] = await pool.query(
-        'SELECT 1 FROM uudai WHERE mauudai = ?',
-        [id]
-      );
-      exists = rows.length > 0;
-    }
+  let nextNumber = 1;
+  if (rows.length > 0) {
+    const lastId = rows[0].mauudai; // VD: "UD0042"
+    const lastNumber = parseInt(lastId.slice(2)); // lấy phần số
+    nextNumber = lastNumber + 1;
+  }
 
-    return id;
-  },
+  // Đảm bảo có đủ 4 chữ số, VD: 1 -> UD0001
+  const newId = 'UD' + String(nextNumber).padStart(4, '0');
+  return newId;
+}
+,
 
   // Lấy theo mã ưu đãi
   async findById(mauudai) {

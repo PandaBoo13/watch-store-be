@@ -15,7 +15,7 @@ const DiaChiNguoiDungRepository = {
     diachi,
     la_mac_dinh = false
   }) {
-    const madiachi = await this.generateUniqueId();
+    const madiachi = await this.generateUniqueId(mataikhoan);
 
     // Nếu là địa chỉ mặc định, cập nhật tất cả các địa chỉ trước đó thành không mặc định
     if (la_mac_dinh) {
@@ -45,21 +45,27 @@ const DiaChiNguoiDungRepository = {
   },
 
   // Sinh mã địa chỉ không trùng
-  async generateUniqueId() {
-    let id;
-    let exists = true;
+async generateUniqueId(mataikhoan) {
+  const likePattern = `DC_${mataikhoan}_%`;
 
-    while (exists) {
-      id = "DC" + Math.floor(100000 + Math.random() * 900000);
-      const [rows] = await pool.query(
-        "SELECT 1 FROM diachinguoidung WHERE madiachi = ?",
-        [id]
-      );
-      exists = rows.length > 0;
+  const [rows] = await pool.query(
+    `SELECT madiachi FROM diachinguoidung WHERE mataikhoan = ? AND madiachi LIKE ?`,
+    [mataikhoan, likePattern]
+  );
+
+  let max = 0;
+  for (const row of rows) {
+    const parts = row.madiachi.split('_');
+    const so = parseInt(parts[2]);
+    if (!isNaN(so) && so > max) {
+      max = so;
     }
+  }
 
-    return id;
-  },
+  const next = (max + 1).toString().padStart(3, '0');
+  return `DC_${mataikhoan}_${next}`;
+}
+,
 
   // Lấy địa chỉ theo ID
   async findById(madiachi) {

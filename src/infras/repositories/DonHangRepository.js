@@ -15,10 +15,12 @@ const DonHangRepository = {
     trangthai = 'chua_thanh_toan',
     maphuongthuc,
     madonvivanchuyen,
+    items = [], // 👈 FE truyền vào các sản phẩm được chọn
   }) {
-    const madonhang = await this.generateUniqueDonHangId();
+    const madonhang = await this.generateUniqueDonHangId(mataikhoan);
     const ngaydat = new Date();
 
+    // 1. Tạo đơn hàng
     const sql = `
       INSERT INTO donhang (
         madonhang, mataikhoan, madiachi, tongtien, trangthai, maphuongthuc, madonvivanchuyen, ngaydat
@@ -36,26 +38,40 @@ const DonHangRepository = {
       ngaydat,
     ]);
 
+    // 2. Tạo chi tiết đơn hàng từ giỏ hàng
+    await ChiTietDonHangRepository.chuyenGioHangSangChiTietDonHang(
+      mataikhoan,
+      madonhang,
+      items // 👈 danh sách sản phẩm FE gửi lên
+    );
+
+    // 3. Trả về đơn hàng mới
     return await this.findById(madonhang);
-  },
+  }
+,
 
   // Sinh mã đơn hàng không trùng
-  async generateUniqueDonHangId() {
-    let id;
-    let exists = true;
+ async generateUniqueDonHangId(mataikhoan) {
+  const likePattern = `DH_${mataikhoan}_%`;
 
-    while (exists) {
-      id = 'DH' + Math.floor(100000 + Math.random() * 900000);
-      const [rows] = await pool.query(
-        "SELECT 1 FROM donhang WHERE madonhang = ?",
-        [id]
-      );
-      exists = rows.length > 0;
+  const [rows] = await pool.query(
+    `SELECT madonhang FROM donhang WHERE mataikhoan = ? AND madonhang LIKE ?`,
+    [mataikhoan, likePattern]
+  );
+
+  let max = 0;
+  for (const row of rows) {
+    const parts = row.madonhang.split('_');
+    const so = parseInt(parts[2]);
+    if (!isNaN(so) && so > max) {
+      max = so;
     }
+  }
 
-    return id;
-  },
-
+  const next = (max + 1).toString().padStart(3, '0');
+  return `DH_${mataikhoan}_${next}`;
+}
+,
   // Lấy tất cả đơn hàng (có thể filter theo tài khoản, trạng thái,...)
   async findAllWithFilter(filter = {}) {
     let sql = "SELECT * FROM donhang";

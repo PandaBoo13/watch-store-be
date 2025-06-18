@@ -56,6 +56,25 @@ const ChiTietDonHangService = {
       message: "Xóa chi tiết đơn hàng thành công",
     };
   }
+,
+// Chuyển sản phẩm được chọn từ giỏ hàng sang chi tiết đơn hàng
+  async chuyenTuGioHang(mataikhoan, madonhang, selectedItems) {
+    if (!selectedItems || selectedItems.length === 0) {
+      throw new Error("Không có sản phẩm nào được chọn");
+    }
+
+    await ChiTietDonHangRepository.chuyenGioHangSangChiTietDonHang(
+      mataikhoan,
+      madonhang,
+      selectedItems
+    );
+
+    return {
+      message: "Chuyển các sản phẩm đã chọn từ giỏ hàng vào chi tiết đơn hàng thành công",
+    };
+  }
+
+
 };
 
 module.exports = ChiTietDonHangService;

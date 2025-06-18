@@ -7,44 +7,86 @@ class ChiTietDonHang {
 }
 
 const ChiTietDonHangRepository = {
+
+  
   // Tạo chi tiết đơn hàng mới
   async createChiTiet({ madonhang, masanpham, soluong, giaban }) {
-    const machitietdonhang = await this.generateUniqueId();
+  const machitietdonhang = await this.generateUniqueId(madonhang); // truyền mã đơn hàng vào
 
-    const sql = `
-      INSERT INTO chitietdonhang (
-        machitietdonhang, madonhang, masanpham, soluong, giaban
-      ) VALUES (?, ?, ?, ?, ?)
-    `;
+  const sql = `
+    INSERT INTO chitietdonhang (
+      machitietdonhang, madonhang, masanpham, soluong, giaban
+    ) VALUES (?, ?, ?, ?, ?)
+  `;
 
-    await pool.query(sql, [
-      machitietdonhang,
+  await pool.query(sql, [
+    machitietdonhang,
+    madonhang,
+    masanpham,
+    soluong,
+    giaban
+  ]);
+
+  return await this.findById(machitietdonhang);
+}
+,
+
+async chuyenGioHangSangChiTietDonHang(mataikhoan, madonhang, selectedItems) {
+  for (const item of selectedItems) {
+    const { masanpham, soluong } = item;
+
+    // Kiểm tra sản phẩm có trong giỏ hàng hay không (bảo vệ dữ liệu)
+    const [checkRows] = await pool.query(
+      "SELECT * FROM giohang WHERE mataikhoan = ? AND masanpham = ?",
+      [mataikhoan, masanpham]
+    );
+    if (checkRows.length === 0) continue; // bỏ qua nếu không có
+
+    // Lấy giá bán sản phẩm hiện tại
+    const [spRows] = await pool.query(
+      "SELECT giaban FROM sanpham WHERE masanpham = ?",
+      [masanpham]
+    );
+    const giaban = spRows[0]?.giaban || 0;
+
+    // Tạo chi tiết đơn hàng
+    await ChiTietDonHangRepository.createChiTiet({
       madonhang,
       masanpham,
       soluong,
-      giaban
-    ]);
+      giaban,
+    });
 
-    return await this.findById(machitietdonhang);
-  },
-
+    // Xóa sản phẩm đó khỏi giỏ hàng
+    await pool.query(
+      "DELETE FROM giohang WHERE mataikhoan = ? AND masanpham = ?",
+      [mataikhoan, masanpham]
+    );
+  }
+}
+,
   // Sinh mã chi tiết không trùng
-  async generateUniqueId() {
-    let id;
-    let exists = true;
+  async generateUniqueId(madonhang) {
+  const likePattern = `CT_${madonhang}_%`;
 
-    while (exists) {
-      id = "CT" + Math.floor(100000 + Math.random() * 900000);
-      const [rows] = await pool.query(
-        "SELECT 1 FROM chitietdonhang WHERE machitietdonhang = ?",
-        [id]
-      );
-      exists = rows.length > 0;
+  const [rows] = await pool.query(
+    `SELECT machitietdonhang FROM chitietdonhang WHERE madonhang = ? AND machitietdonhang LIKE ?`,
+    [madonhang, likePattern]
+  );
+
+  let max = 0;
+  for (const row of rows) {
+    const parts = row.machitietdonhang.split('_');
+    const so = parseInt(parts[2]);
+    if (!isNaN(so) && so > max) {
+      max = so;
     }
+  }
 
-    return id;
-  },
-
+  const next = (max + 1).toString().padStart(3, '0');
+  return `CT_${madonhang}_${next}`;
+}
+,
   // Lấy chi tiết theo mã
   async findById(machitietdonhang) {
     const [rows] = await pool.query(
