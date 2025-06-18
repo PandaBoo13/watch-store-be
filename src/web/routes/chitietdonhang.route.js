@@ -21,4 +21,7 @@ router.get("/donhang/:madonhang", ChiTietDonHangController.getByDonHangId);
 // Cập nhật chi tiết đơn hàng
 router.put("/update/:id", ChiTietDonHangController.update);
 
+// ✅ Chuyển sản phẩm đã chọn từ giỏ hàng sang chi tiết đơn hàng
+router.post("/chuyen-tu-giohang", ChiTietDonHangController.chuyenTuGioHang);
+
 module.exports = router;

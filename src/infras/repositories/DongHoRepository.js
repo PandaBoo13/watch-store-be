@@ -1,19 +1,26 @@
 const pool = require('../db/mysql').promise();
 
 // Hàm tạo mã 6 chữ số không trùng
+// Tạo mã mới tăng dần theo định dạng DH000001, DH000002, ...
 async function generateUniqueDongHoId() {
-  let id;
-  let exists = true;
+  const [rows] = await pool.query(`
+    SELECT madongho FROM dongho 
+    WHERE madongho LIKE 'DH%' 
+    ORDER BY madongho DESC 
+    LIMIT 1
+  `);
 
-  while (exists) {
-    id = Math.floor(100000 + Math.random() * 900000); // Số ngẫu nhiên từ 100000 đến 999999
-    const [rows] = await pool.query('SELECT 1 FROM dongho WHERE madongho = ?', [id]);
-    exists = rows.length > 0;
+  let newIdNumber = 1;
+
+  if (rows.length > 0) {
+    const lastId = rows[0].madongho; // VD: DH000123
+    const numberPart = parseInt(lastId.substring(2)); // cắt bỏ 'DH', lấy 000123 => 123
+    newIdNumber = numberPart + 1;
   }
 
-  return id.toString();
+  const newId = 'DH' + newIdNumber.toString().padStart(6, '0');
+  return newId;
 }
-
 // Watch entity constructor
 class DongHo {
   constructor(data) {

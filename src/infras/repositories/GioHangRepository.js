@@ -8,29 +8,65 @@ class GioHang {
 
 const GioHangRepository = {
   // Sinh mã giỏ hàng ngẫu nhiên không trùng
-  async generateUniqueGioHangId() {
-    let id;
-    let exists = true;
+  // Sinh mã giỏ hàng theo dạng GH_<mataikhoan>_<số tăng dần>
+  async generateUniqueGioHangId(mataikhoan) {
+    const likePattern = `GH_${mataikhoan}_%`;
 
-    while (exists) {
-      id = 'GH' + Math.floor(100000 + Math.random() * 900000);
-      const [rows] = await pool.query('SELECT 1 FROM giohang WHERE magiohang = ?', [id]);
-      exists = rows.length > 0;
+    const [rows] = await pool.query(
+      `SELECT magiohang FROM giohang WHERE mataikhoan = ? AND magiohang LIKE ?`,
+      [mataikhoan, likePattern]
+    );
+
+    let max = 0;
+    for (const row of rows) {
+      const parts = row.magiohang.split('_');
+      const so = parseInt(parts[2]);
+      if (!isNaN(so) && so > max) {
+        max = so;
+      }
     }
 
-    return id;
+    const next = (max + 1).toString().padStart(3, '0');
+    return `GH_${mataikhoan}_${next}`;
   },
+
 
   // Thêm sản phẩm vào giỏ
   async add({ mataikhoan, masanpham, soluong }) {
-    const magiohang = await this.generateUniqueGioHangId();
-    const ngaythem = new Date();
+  const ngaythem = new Date();
 
-    const sql = `
-      INSERT INTO giohang (magiohang, mataikhoan, masanpham, soluong, ngaythem)
-      VALUES (?, ?, ?, ?, ?)
-    `;
-    await pool.query(sql, [magiohang, mataikhoan, masanpham, soluong, ngaythem]);
+  // 1. Kiểm tra sản phẩm đã có trong giỏ hàng chưa
+  const [rows] = await pool.query(
+    `SELECT * FROM giohang WHERE mataikhoan = ? AND masanpham = ?`,
+    [mataikhoan, masanpham]
+  );
+
+  if (rows.length > 0) {
+    // 2. Nếu đã có, cập nhật số lượng (cộng thêm)
+    const currentSoLuong = rows[0].soluong;
+    const newSoLuong = currentSoLuong + soluong;
+
+    await pool.query(
+      `UPDATE giohang SET soluong = ?, ngaythem = ? WHERE magiohang = ?`,
+      [newSoLuong, ngaythem, rows[0].magiohang]
+    );
+
+    return {
+      magiohang: rows[0].magiohang,
+      mataikhoan,
+      masanpham,
+      soluong: newSoLuong,
+      ngaythem
+    };
+  } else {
+    // 3. Nếu chưa có, tạo mới
+    const magiohang = await this.generateUniqueGioHangId(mataikhoan);
+
+    await pool.query(
+      `INSERT INTO giohang (magiohang, mataikhoan, masanpham, soluong, ngaythem)
+       VALUES (?, ?, ?, ?, ?)`,
+      [magiohang, mataikhoan, masanpham, soluong, ngaythem]
+    );
 
     return {
       magiohang,
@@ -39,8 +75,9 @@ const GioHangRepository = {
       soluong,
       ngaythem
     };
-  },
-
+  }
+}
+,
   // Lấy tất cả sản phẩm trong giỏ của 1 tài khoản
   async findByTaiKhoan(mataikhoan) {
     const [rows] = await pool.query(

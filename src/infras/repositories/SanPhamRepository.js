@@ -38,7 +38,7 @@ const SanPhamRepository = {
       giaban,
       hinhanhchinh,
       ngaytao,
-      mauudai,
+      mauudai||null,
       soluong,
       bestseller,
       trangthai,
@@ -65,21 +65,26 @@ const SanPhamRepository = {
   },
 
   // Sinh mã sản phẩm không trùng
-  async generateUniqueSanPhamId() {
-    let id;
-    let exists = true;
+async generateUniqueSanPhamId() {
+  const [rows] = await pool.query(`
+    SELECT masanpham FROM sanpham 
+    WHERE masanpham LIKE 'SP%' 
+    ORDER BY masanpham DESC 
+    LIMIT 1
+  `);
 
-    while (exists) {
-      id = Math.floor(100000 + Math.random() * 900000);
-      const [rows] = await pool.query(
-        "SELECT 1 FROM sanpham WHERE masanpham = ?",
-        [id]
-      );
-      exists = rows.length > 0;
-    }
+  let newNumber = 1;
 
-    return id.toString();
-  },
+  if (rows.length > 0) {
+    const lastId = rows[0].masanpham; // VD: 'SP000123'
+    const numberPart = parseInt(lastId.substring(2), 10); // bỏ 'SP'
+    newNumber = numberPart + 1;
+  }
+
+  const newId = "SP" + String(newNumber).padStart(6, "0"); // VD: 'SP000124'
+  return newId;
+}
+,
 
   // Tìm theo mã
   async findById(masanpham) {

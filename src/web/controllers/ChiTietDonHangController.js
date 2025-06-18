@@ -105,6 +105,31 @@ class ChiTietDonHangController {
       });
     }
   }
+
+  // Chuyển các sản phẩm đã chọn từ giỏ hàng sang chi tiết đơn hàng
+  async chuyenTuGioHang(req, res) {
+    try {
+      const { mataikhoan, madonhang, selectedItems } = req.body;
+
+      const result = await ChiTietDonHangService.chuyenTuGioHang(
+        mataikhoan,
+        madonhang,
+        selectedItems
+      );
+
+      res.status(200).json({
+        success: true,
+        message: result.message,
+      });
+    } catch (err) {
+      res.status(400).json({
+        success: false,
+        message: err.message || "Chuyển từ giỏ hàng sang chi tiết đơn hàng thất bại",
+      });
+    }
+  }
+
+
 }
 
 module.exports = new ChiTietDonHangController;
