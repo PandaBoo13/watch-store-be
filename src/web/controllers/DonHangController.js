@@ -7,7 +7,7 @@ class DonHangController {
       const donhang = await DonHangService.create(req.body);
       res.status(201).json({
         success: true,
-        message: donhang.message,
+        madonhang: donhang.data?.madonhang,
         data: donhang.data,
       });
     } catch (err) {

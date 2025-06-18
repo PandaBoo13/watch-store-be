@@ -18,4 +18,11 @@ router.get("/getId/:id", DiaChiNguoiDungController.getById);
 // Cập nhật địa chỉ
 router.put("/update/:id", DiaChiNguoiDungController.update);
 
+// --- BỔ SUNG ---
+// Lấy địa chỉ mặc định theo mã tài khoản
+router.get("/mac-dinh/:mataikhoan", DiaChiNguoiDungController.getMacDinhByTaiKhoan);
+
+// Tạo địa chỉ mới và gán làm mặc định
+router.post("/create-mac-dinh", DiaChiNguoiDungController.createMacDinh);
+
 module.exports = router;

@@ -46,7 +46,38 @@ const DiaChiNguoiDungService = {
     return {
       message: "Xóa địa chỉ thành công"
     };
-  }
+  },
+
+  // Lấy địa chỉ mặc định của người dùng
+  async getDefaultByTaiKhoan(mataikhoan) {
+    const diachiMacDinh = await DiaChiNguoiDungRepository.findDefaultByTaiKhoan(mataikhoan);
+    if (!diachiMacDinh) {
+      return {
+        message: "Không tìm thấy địa chỉ mặc định",
+        data: null
+      };
+    }
+    return {
+      message: "Lấy địa chỉ mặc định thành công",
+      data: diachiMacDinh
+    };
+  },
+
+  async createAndSetDefault(data) {
+    // Bắt buộc la_mac_dinh = true để gán làm mặc định
+    data.la_mac_dinh = true;
+
+    const diachiMacDinh = await DiaChiNguoiDungRepository.createDiaChi(data);
+    return {
+      message: "Địa chỉ mặc định đã được tạo thành công",
+      data: diachiMacDinh
+    };
+  },
+
+
 };
+
+
+
 
 module.exports = DiaChiNguoiDungService;

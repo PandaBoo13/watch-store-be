@@ -88,6 +88,41 @@ class DiaChiNguoiDungController {
       });
     }
   }
+
+  // Lấy địa chỉ mặc định của tài khoản
+  async getMacDinhByTaiKhoan(req, res) {
+    try {
+      const { mataikhoan } = req.params;
+      const result = await DiaChiNguoiDungService.getMacDinhByTaiKhoan(mataikhoan);
+      res.status(200).json({
+        success: true,
+        message: result.message,
+        data: result.data,
+      });
+    } catch (err) {
+      res.status(404).json({
+        success: false,
+        message: err.message || "Không tìm thấy địa chỉ mặc định",
+      });
+    }
+  }
+
+  // Tạo địa chỉ mới và gán làm mặc định
+  async createMacDinh(req, res) {
+    try {
+      const diachi = await DiaChiNguoiDungService.createAndSetDefault(req.body);
+      res.status(201).json({
+        success: true,
+        message: diachi.message,
+        data: diachi.data,
+      });
+    } catch (err) {
+      res.status(400).json({
+        success: false,
+        message: err.message || "Tạo địa chỉ mặc định thất bại",
+      });
+    }
+  }
 }
 
 module.exports = new DiaChiNguoiDungController;
