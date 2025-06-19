@@ -88,11 +88,23 @@ const DongHoRepository = {
   },
 
   // Xóa sản phẩm
-  async deleteDongHo(madongho) {
+async deleteDongHo(madongho) {
+  try {
     const sql = 'DELETE FROM dongho WHERE madongho = ?';
     const [result] = await pool.query(sql, [madongho]);
-    return result.affectedRows > 0;
+    if (result.affectedRows === 0) throw new Error("Không tìm thấy đồng hồ để xóa");
+    return true;
+  } catch (err) {
+    // Nếu là lỗi do khóa ngoại
+    if (err.code === 'ER_ROW_IS_REFERENCED_2') {
+      const error = new Error("Không thể xóa vì đồng hồ này đang được dùng trong bảng sản phẩm.");
+      error.status = 400;
+      throw error;
+    }
+    throw err;
   }
+}
+
 };
 
 module.exports = DongHoRepository;
