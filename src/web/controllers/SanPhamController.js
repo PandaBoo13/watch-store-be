@@ -146,21 +146,34 @@ class SanPhamController {
   }
 
   // Xóa sản phẩm
-  async delete(req, res) {
-    try {
-      const { id } = req.params;
-      await SanPhamService.delete(id);
-      res.status(200).json({
-        success: true,
-        message: "Xóa sản phẩm thành công",
-      });
-    } catch (err) {
-      res.status(400).json({
+async delete(req, res) {
+  try {
+    const { id } = req.params;
+    await SanPhamService.delete(id);
+    res.status(200).json({
+      success: true,
+      message: "Xóa sản phẩm thành công",
+    });
+  } catch (err) {
+    // Nếu lỗi là do sản phẩm từng được đặt
+    if (
+      err.message &&
+      err.message.includes("được sử dụng trong đơn hàng")
+    ) {
+      return res.status(409).json({
         success: false,
-        message: err.message || "Xóa sản phẩm thất bại",
+        message: err.message, // "Sản phẩm đã từng được đặt, không thể xóa."
       });
     }
+
+    // Các lỗi khác (lỗi server, không tìm thấy, ...)
+    res.status(400).json({
+      success: false,
+      message: err.message || "Xóa sản phẩm thất bại",
+    });
   }
+}
+
 
 
   async getDetail(req, res) {
