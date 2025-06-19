@@ -72,6 +72,7 @@ class DanhMucDongHoController {
   }
 
   // Xóa danh mục
+
   async delete(req, res) {
     try {
       const { id } = req.params;
@@ -97,3 +98,4 @@ class DanhMucDongHoController {
   }
 }
 module.exports = new DanhMucDongHoController();
+

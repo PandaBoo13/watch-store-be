@@ -67,21 +67,29 @@ class DongHoController {
     }
   }
 
-  async delete(req, res) {
-    try {
-      const { id } = req.params;
-      await DongHoService.delete(id);
-      res.status(200).json({
-        success: true,
-        message: "Xóa đồng hồ thành công",
-      });
-    } catch (err) {
-      res.status(400).json({
-        success: false,
-        message: err.message || "Xóa đồng hồ thất bại",
-      });
+async delete(req, res) {
+  try {
+    const { id } = req.params;
+    await DongHoService.delete(id);
+    res.status(200).json({
+      success: true,
+      message: "Xóa đồng hồ thành công",
+    });
+  } catch (err) {
+    let message = "Không thể xoá model vì đang được sử dụng trong sản phẩm.";
+    
+    // Nếu là lỗi ràng buộc khóa ngoại
+    if (err.code === "ER_ROW_IS_REFERENCED_2") {
+      message = "Không thể xoá model vì đang được sử dụng trong sản phẩm.";
     }
+
+    res.status(400).json({
+      success: false,
+      message,
+    });
   }
+}
+
 }
 
 module.exports = new DongHoController;
