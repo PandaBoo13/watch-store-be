@@ -1,6 +1,6 @@
 const NguoiDungRepository = require("../infras/repositories/NguoiDungRepository");
 const bcrypt = require("bcrypt");
-const authService= require('../utils/jwt')
+const authService = require("../utils/jwt");
 const NguoiDungService = {
   // Đăng ký tài khoản mới
   async dangKy({ email, matkhau, hoten, sodienthoai }) {
@@ -17,7 +17,6 @@ const NguoiDungService = {
     return { thongbao: "Đăng ký thành công" };
   },
 
-  // Đăng nhập
   async dangNhap({ email, matkhau }) {
     const nguoidung = await NguoiDungRepository.timNguoiDungVaMatKhau(email);
     if (!nguoidung) throw new Error("Không tìm thấy email");
@@ -26,21 +25,21 @@ const NguoiDungService = {
     if (!dung) throw new Error("Sai mật khẩu");
 
     return {
-  thongbao: "Đăng nhập thành công",
-  nguoidung: {
-    mataikhoan: nguoidung.mataikhoan,
-    hoten: nguoidung.hoten,
-    vaitro: nguoidung.vaitro,
+      thongbao: "Đăng nhập thành công",
+      nguoidung: {
+        mataikhoan: nguoidung.mataikhoan,
+        hoten: nguoidung.hoten,
+        vaitro: nguoidung.vaitro,
+        email: nguoidung.email, // Thêm vào trả về
+      },
+      token: authService.taoToken({
+        id: nguoidung.mataikhoan,
+        vaitro: nguoidung.vaitro,
+        hoten: nguoidung.hoten,
+        email: nguoidung.email, // Thêm vào token
+      }),
+    };
   },
-  token: authService.taoToken({
-    id: nguoidung.mataikhoan,
-    vaitro: nguoidung.vaitro,
-    hoten: nguoidung.hoten
-  })
-};
-
-  },
-
   // Lấy thông tin người dùng theo ID
   async layNguoiDungTheoId(id) {
     const nguoidung = await NguoiDungRepository.layNguoiDungTheoId(id);
@@ -57,13 +56,18 @@ const NguoiDungService = {
 
   // Đổi mật khẩu
   async doiMatKhau(mataikhoan, matkhauCu, matkhauMoi) {
-    const nguoidung = await NguoiDungRepository.timNguoiDungVaMatKhauTheoId(mataikhoan);
+    const nguoidung = await NguoiDungRepository.timNguoiDungVaMatKhauTheoId(
+      mataikhoan
+    );
     if (!nguoidung) throw new Error("Không tìm thấy tài khoản");
 
     const dung = await bcrypt.compare(matkhauCu, nguoidung.matkhau);
     if (!dung) throw new Error("Mật khẩu cũ không đúng");
 
-    const thanhCong = await NguoiDungRepository.doiMatKhau(mataikhoan, matkhauMoi);
+    const thanhCong = await NguoiDungRepository.doiMatKhau(
+      mataikhoan,
+      matkhauMoi
+    );
     if (!thanhCong) throw new Error("Đổi mật khẩu thất bại");
 
     return { thongbao: "Đổi mật khẩu thành công" };
@@ -81,8 +85,6 @@ const NguoiDungService = {
     const ds = await NguoiDungRepository.layTatCaNguoiDung();
     return ds;
   },
-
-  
 };
 
 module.exports = NguoiDungService;
