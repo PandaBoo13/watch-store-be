@@ -16,13 +16,12 @@ const DanhMucDongHoRepository = {
     }
 
     const sql = `
-  INSERT INTO danhmucdongho (tendanhmuc, dacdiem)
-  VALUES (?, ?)
-`;
-    const [result] = await pool.query(sql, [tendanhmuc, dacdiem]);
-    return await this.findById(result.insertId);
+      INSERT INTO danhmucdongho (madanhmuc, tendanhmuc, dacdiem)
+      VALUES (?, ?, ?)
+    `;
+    await pool.query(sql, [madanhmuc, tendanhmuc, dacdiem]);
+    return await this.findById(madanhmuc);
   },
-
   // Tìm theo mã danh mục
   async findById(madanhmuc) {
     const [rows] = await pool.query(
