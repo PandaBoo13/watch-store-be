@@ -116,13 +116,30 @@ async generateUniqueSanPhamId() {
   },
 
   // Xóa sản phẩm
-  async deleteSanPham(masanpham) {
-    const [result] = await pool.query(
-      "DELETE FROM sanpham WHERE masanpham = ?",
-      [masanpham]
-    );
-    return result.affectedRows > 0;
-  },
+async deleteSanPham(masanpham) {
+  // Kiểm tra xem sản phẩm đã được dùng trong đơn hàng chưa
+  const [usedRows] = await pool.query(
+    "SELECT 1 FROM chitietdonhang WHERE masanpham = ? LIMIT 1",
+    [masanpham]
+  );
+
+  if (usedRows.length > 0) {
+    // Ném lỗi với thông điệp rõ ràng
+    const error = new Error("Không thể xóa: Sản phẩm đã từng được đặt hàng.");
+    error.code = "PRODUCT_IN_USE";
+    throw error;
+  }
+
+  // Tiến hành xóa nếu không bị ràng buộc
+  const [result] = await pool.query(
+    "DELETE FROM sanpham WHERE masanpham = ?",
+    [masanpham]
+  );
+
+  return result.affectedRows > 0;
+}
+
+,
 
   // Lấy chi tiết sản phẩm + thông tin đồng hồ
   async findDetailByMaSanPham(masanpham) {
@@ -141,30 +158,32 @@ async generateUniqueSanPhamId() {
     );
     return rows.length > 0 ? rows[0] : null;
   },
-  async laySanPhamBestseller() {
-    const [rows] = await pool.query(
-      "SELECT * FROM sanpham WHERE bestseller = 1"
-    );
-    return rows;
-  },
-  async layDongHoNam() {
-    const [rows] = await pool.query(`
-      SELECT sp.*
-      FROM sanpham sp
-      JOIN dongho dh ON sp.mamodel = dh.madongho
-      WHERE dh.gioitinh = 'nam'
-    `);
-    return rows.map((row) => new SanPham(row));
-  },
-  async layDongHoNu() {
-    const [rows] = await pool.query(`
-      SELECT sp.*
-      FROM sanpham sp
-      JOIN dongho dh ON sp.mamodel = dh.madongho
-      WHERE dh.gioitinh = 'nu'
-    `);
-    return rows.map((row) => new SanPham(row));
-  },
+async laySanPhamBestseller() {
+  const [rows] = await pool.query(
+    "SELECT * FROM sanpham WHERE bestseller = 1 AND trangthai = 'dangban'"
+  );
+  return rows;
+},
+async layDongHoNam() {
+  const [rows] = await pool.query(`
+    SELECT sp.*
+    FROM sanpham sp
+    JOIN dongho dh ON sp.mamodel = dh.madongho
+    WHERE dh.gioitinh = 'nam' AND sp.trangthai = 'dangban'
+  `);
+  return rows.map((row) => new SanPham(row));
+},
+
+async layDongHoNu() {
+  const [rows] = await pool.query(`
+    SELECT sp.*
+    FROM sanpham sp
+    JOIN dongho dh ON sp.mamodel = dh.madongho
+    WHERE dh.gioitinh = 'nu' AND sp.trangthai = 'dangban'
+  `);
+  return rows.map((row) => new SanPham(row));
+},
+
 
 async layGiaSanPham(masanpham) {
   const [rows] = await pool.query(
