@@ -129,7 +129,7 @@ async generateUniqueId(mataikhoan) {
       [mataikhoan]
     );
 
-    // Tạo mã địa chỉ mới
+
     const madiachi = await this.generateUniqueId(mataikhoan);
 
     // Chèn địa chỉ mới với la_mac_dinh = true

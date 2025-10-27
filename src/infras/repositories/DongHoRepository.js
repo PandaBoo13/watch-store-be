@@ -1,7 +1,6 @@
 const pool = require('../db/mysql').promise();
 
-// Hàm tạo mã 6 chữ số không trùng
-// Tạo mã mới tăng dần theo định dạng DH000001, DH000002, ...
+
 async function generateUniqueDongHoId() {
   const [rows] = await pool.query(`
     SELECT madongho FROM dongho 
@@ -13,15 +12,15 @@ async function generateUniqueDongHoId() {
   let newIdNumber = 1;
 
   if (rows.length > 0) {
-    const lastId = rows[0].madongho; // VD: DH000123
-    const numberPart = parseInt(lastId.substring(2)); // cắt bỏ 'DH', lấy 000123 => 123
+    const lastId = rows[0].madongho; 
+    const numberPart = parseInt(lastId.substring(2)); 
     newIdNumber = numberPart + 1;
   }
 
   const newId = 'DH' + newIdNumber.toString().padStart(6, '0');
   return newId;
 }
-// Watch entity constructor
+
 class DongHo {
   constructor(data) {
     Object.assign(this, data);
@@ -29,7 +28,7 @@ class DongHo {
 }
 
 const DongHoRepository = {
-  // Tạo sản phẩm đồng hồ mới
+
   async createDongHo({
     tenmodel,
     madanhmuc,

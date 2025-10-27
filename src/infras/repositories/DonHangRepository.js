@@ -16,9 +16,9 @@ const DonHangRepository = {
     trangthai = "chua_thanh_toan",
     maphuongthuc,
     madonvivanchuyen,
-    items = [], // danh sách sản phẩm được chọn
+    items = [], 
   }) {
-    const madonhang = this.generateUUIDDonHang(); // Dùng uuid mới
+    const madonhang = this.generateUUIDDonHang(); 
     const ngaydat = new Date();
 
     const sql = `
@@ -47,12 +47,12 @@ const DonHangRepository = {
     return await this.findById(madonhang);
   },
 
-  // Sinh mã đơn hàng sử dụng uuid
+ 
   generateUUIDDonHang() {
-    return `DH_${uuidv4()}`;
+    return `DH_${uuidv4()}`
   },
 
-  // Lấy tất cả đơn hàng (có thể filter theo tài khoản, trạng thái,...)
+
   async findAllWithFilter(filter = {}) {
     let sql = "SELECT * FROM donhang";
     const conditions = [];

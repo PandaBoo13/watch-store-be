@@ -46,13 +46,13 @@ async layTatCaNguoiDung() {
     try {
       await conn.beginTransaction();
 
-      // Thêm vào bảng taikhoan
+
       await conn.query(
         'INSERT INTO taikhoan (mataikhoan, matkhau, vaitro) VALUES (?, ?, ?)',
         [mataikhoan, matkhauMaHoa, vaitro]
       );
 
-      // Thêm vào bảng nguoidung
+     
       await conn.query(
         'INSERT INTO nguoidung (manguoidung, email, hoten, sodienthoai) VALUES (?, ?, ?, ?)',
         [mataikhoan, email, hoten, sodienthoai]

@@ -29,12 +29,11 @@ async generateUniqueMaUuDai() {
 
   let nextNumber = 1;
   if (rows.length > 0) {
-    const lastId = rows[0].mauudai; // VD: "UD0042"
-    const lastNumber = parseInt(lastId.slice(2)); // lấy phần số
+    const lastId = rows[0].mauudai; 
+    const lastNumber = parseInt(lastId.slice(2)); 
     nextNumber = lastNumber + 1;
   }
 
-  // Đảm bảo có đủ 4 chữ số, VD: 1 -> UD0001
   const newId = 'UD' + String(nextNumber).padStart(4, '0');
   return newId;
 }

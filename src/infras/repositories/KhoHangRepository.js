@@ -2,7 +2,7 @@ const pool = require('../db/mysql').promise();
 
 // Hàm tạo mã kho hàng không trùng
 function generateMaKhoHang() {
-  return 'KHO' + Date.now(); // Ví dụ: KHO1718552000000
+  return 'KHO' + Date.now(); 
 }
 
 // Class đối tượng kho hàng

@@ -7,8 +7,7 @@ class GioHang {
 }
 
 const GioHangRepository = {
-  // Sinh mã giỏ hàng ngẫu nhiên không trùng
-  // Sinh mã giỏ hàng theo dạng GH_<mataikhoan>_<số tăng dần>
+
   async generateUniqueGioHangId(mataikhoan) {
     const likePattern = `GH_${mataikhoan}_%`;
 

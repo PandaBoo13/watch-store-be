@@ -12,7 +12,7 @@ const ChiTietDonHangRepository = {
   
   // Tạo chi tiết đơn hàng mới
 async createChiTiet({ madonhang, masanpham, soluong, giaban }) {
-  const machitietdonhang = `CT_${uuidv4()}`; // dùng uuid thay vì sinh tăng dần
+  const machitietdonhang = `CT_${uuidv4()}`; 
 
   const sql = `
     INSERT INTO chitietdonhang (

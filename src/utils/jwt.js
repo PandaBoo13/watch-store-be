@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
 
-const SECRET_KEY = 'your-secret-key'; // 🔐 Đổi thành giá trị thực tế, lưu trong biến môi trường
+const SECRET_KEY = 'your-secret-key';
 
 const authService = {
   taoToken(payload) {
-    return jwt.sign(payload, SECRET_KEY, { expiresIn: '1d' }); // Token hết hạn sau 1 ngày
+    return jwt.sign(payload, SECRET_KEY, { expiresIn: '1d' }); 
   },
 
   xacThucToken(token) {

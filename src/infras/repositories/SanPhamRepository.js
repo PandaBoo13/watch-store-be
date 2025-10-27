@@ -141,7 +141,6 @@ async deleteSanPham(masanpham) {
 
 ,
 
-  // Lấy chi tiết sản phẩm + thông tin đồng hồ
   async findDetailByMaSanPham(masanpham) {
     const [rows] = await pool.query(
       `
